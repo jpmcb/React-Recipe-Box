@@ -1,0 +1,281 @@
+// REACT RECIPE BOX - BY JPMCB //
+/////////////////////////////////
+
+// array of keys from local storage object 
+var keys = Object.keys(localStorage);
+
+// REACT JS CODE
+
+// push array of list items within unordered lsit
+class Recipe extends React.Component {
+  getIngredients(name) {
+    var ingredients = localStorage[name].split(', ');   // to replace with better reg ex?
+    var listArr = [];
+    
+    for (var i = 0; i < ingredients.length; i++){
+      listArr.push(<li>{ingredients[i]}</li>)
+    }
+    
+    return(
+      <ul>
+        {listArr}
+      </ul>
+    );
+  }
+  
+  render() {
+    return(
+      <div>{this.getIngredients(this.props.recipeName)}</div>
+    )
+  }
+}
+
+// function and html for add recipe
+class AddRecipe extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = ({show: false,
+                   recipe: '', ingredients: ''})
+    
+    this.changeRecipe = this.changeRecipe.bind(this);
+    this.changeIngredients = this.changeIngredients.bind(this);
+    this.add = this.add.bind(this);
+    this.showAddMenu = this.showAddMenu.bind(this);
+  }
+  
+  showAddMenu() {
+    this.setState({show: !this.state.show})
+  }
+  
+  changeRecipe(event) {
+    this.setState(
+      {recipe: event.target.value}
+    );
+  }
+  
+  changeIngredients(event) {
+    this.setState(
+      {ingredients: event.target.value}
+    );
+  }
+  
+  add() {
+    // code to add state and new recipe
+    if(this.state.recipe === ''){
+      console.warn("Please include a recipe name")
+    } else {
+      localStorage.setItem(this.state.recipe, this.state.ingredients);  
+      this.setState({recipe: '', ingredients: ''});
+    }
+  }
+  
+  render() {
+    if(this.state.show === false) {
+      return (
+        <div id='add-recipe-button'>
+        <button onClick={this.showAddMenu}>{this.props.text}</button>
+        </div>
+      )
+    } else if(this.state.show === true) {
+    return(
+      <div id='add-recipe-button'>
+      <button onClick={this.showAddMenu}>
+        {this.props.text}
+      </button>
+      <span id='add-recipe'>
+        <form>
+          <h4>Recipe Name</h4>
+          <input value={this.state.recipe} onChange={this.changeRecipe} />
+          <h4>Ingredients, seperated by a comma</h4>
+          <textarea value={this.state.ingredients} onChange={this.changeIngredients} />
+          <br />
+          <input type='submit' onClick={this.add}/>
+        </form>
+      </span>
+      </div>
+    )
+   }
+  }
+}
+
+// functions and html for delete recipe
+class Delete extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = ({delete: ''});
+    
+    this.deleteRecipe = this.deleteRecipe.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+  
+  delete(event) {
+    const {id} = event.target;
+    localStorage.removeItem(id.replace('delete', ''));
+    keys = Object.keys(localStorage);
+    
+    this.setState({delete: ''});
+  }
+  
+  deleteRecipe(event) {
+    console.log(this.state);
+    const {id} = event.target;
+    event.target.className = 'danger';
+    
+    this.setState({delete: 'delete'}, console.log(this.state)); 
+  }
+  
+  render() {
+    if (this.state.delete === 'delete') {return(
+      <button id={this.props.id} onClick={(event) => { this.delete(event); this.props.callBack(event); }}>Are you sure?</button>)
+    } else {
+    return(
+      <button id={this.props.id} onClick={this.deleteRecipe}>
+        Delete
+      </button>
+    )
+  }
+ }   
+}
+
+// functions and html to edit recipe from local storage
+class Edit extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = ({edit: false,
+                   recipe: '', ingredients: ''})
+    
+    this.editRecipe = this.editRecipe.bind(this);
+    this.editRecipeName = this.editRecipeName.bind(this);
+    this.editIngredients = this.editIngredients.bind(this);
+    this.finalEdit = this.finalEdit.bind(this);
+  }
+  
+  editRecipeName(event) {
+    this.setState({recipe: event.target.value})
+  }
+  
+  editIngredients(event) {
+    this.setState({ingredients: event.target.value})
+  }
+  
+  // prevent blank recipe from populating local storage
+  finalEdit(id) {
+    if(this.state.recipe === '') {
+      if(this.state.ingredients === '') {
+        localStorage.setItem(id, localStorage[id]);
+      } else if(this.state.ingredients !== '') {
+        localStorage.setItem(id, this.state.ingredients);
+      }
+    } else if(this.state.recipe !== '') {
+      if(this.state.ingredients === '') {
+        var oldIngredients = localStorage[id];
+        console.log(id);
+        localStorage.removeItem(id);
+        localStorage.setItem(this.state.recipe, oldIngredients);
+        console.log(localStorage);
+      } else if (this.state.ingredients !== '') {
+        localStorage.removeItem(id);
+        localStorage.setItem(this.state.recipe, this.state.ingredients); 
+      }
+    }
+     
+    //console.log(localStorage);
+    this.setState({recipe: '', ingredients: ''})  
+  }
+  
+  editRecipe() {
+    this.setState({edit: !this.state.edit});
+  }
+  
+  render() {
+    const editID = this.props.id.replace('edit', '');
+    
+    if(this.state.edit === false){
+      return(
+        <button onClick={this.editRecipe}>Edit</button>
+      )
+    } else if(this.state.edit === true) {
+      return (
+        <div>
+        <button onClick={this.editRecipe}>Edit</button>
+          <span id='edit-recipe'>
+          <form>
+            <input defaultValue={editID} onChange={this.editRecipeName} />
+            
+            <textarea defaultValue={localStorage[editID]} onChange={this.editIngredients} />
+            <input type='submit' onClick={() => this.finalEdit(editID)}/>
+          </form>
+          </span>
+        </div>
+      )
+    }
+  }
+}
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    var recipeState = new Object;
+    keys.map((x) => {recipeState[x] = false})
+    
+    this.state = recipeState;
+    
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
+  
+  update(event){
+    const {id} = event.target;
+    this.state[id] === true ? this.state[id] = false : this.state[id] = true;
+    this.forceUpdate(); 
+  }
+  
+  delete(event){
+    const {id} = event.target;
+    var correctedId = id.replace('delete', '');
+    this.state[correctedId] === true ? this.state[id] = false : this.state[id] = true;
+    this.forceUpdate();
+  }
+  
+  getRecipe() {
+    var recipeArr = [];
+      
+      for (var i = 0; i < keys.length; i++){
+        if(this.state[keys[i]]) {
+        recipeArr.push(
+          <div className='recipe-sheet'>
+          <h3 id={keys[i]} onClick={this.update}>{keys[i]}</h3>
+          <Recipe recipeName={keys[i]} />
+          <Delete id={keys[i] + 'delete'} callBack={this.delete} />
+          <Edit id={keys[i] + 'edit'} />
+          </div>
+        )
+       } else {
+         recipeArr.push(
+          <div className='recipe-sheet'>
+          <h3 id={keys[i]} onClick={this.update}>{keys[i]}</h3>
+          </div> )
+       }
+      }
+    
+      return recipeArr;
+  }
+  
+  render() {
+    return(
+      <div>
+      <h1 id='title'>React Recipe Box</h1>
+      <AddRecipe text='Add Recipe' />
+        
+      {this.getRecipe()}
+        
+      <a id='credits' href="https://github.com/jpmcb" target="_blank">by jpmcb</a>
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('root')
+);

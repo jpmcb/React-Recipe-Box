@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css?family=Arsenal');
+
+// color schemes to be used throughout app
+$background: #d8d8d4;
+$box-border: #878787;
+$tab-background: #f7f7f7;
+$button-background: #ff3838;
+$form-color: #c9a3a3;
+
+@mixin font {
+  font-weight: lighter;
+  letter-spacing: -1px;
+}
+
+body {
+  background: $background;
+  font-family: 'Arsenal', sans-serif;
+  margin: 0 auto;
+  
+  #title {
+    display: block;
+    width: 30%;
+    margin: 20px auto 20px auto;
+    text-align: center;
+    @include font;
+    font-size: 2.3em;
+  }
+}
+
+#add-recipe-button {
+  margin: 25px;
+  text-align: center;
+  padding: 5px;
+  
+  & > button {
+    width: 250px;
+    height: 30px;
+    border-radius: 10px 10px 10px;
+    background: $button-background;
+    @include font;
+  }
+  
+  form {
+    position: absolute;
+    left: 50%;
+    margin-top: 20px;
+    margin-left: -150px;
+    background: $form-color;
+    box-shadow: 2px 2px 10px;
+    border-radius: 10px 10px 10px;
+    width: 300px;
+    z-index: 2;
+    @include font;
+    
+    h4 {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+    
+    input[value] {
+      margin-top: -5px;
+      background: $tab-background;
+    }
+    
+    input[type='submit'] {
+      width: 120px;
+      margin: 12px;
+      background: $button-background;
+      border-radius: 10px 10px 10px;
+    }
+  }
+  
+  input {
+    margin: 2px;
+    padding: 2px;  
+  }
+}
+
+.recipe-sheet {
+  background: $tab-background;
+  width: 500px;
+  display: block;
+  margin: 15px auto;
+  border: 1px solid $box-border;
+  border-radius: 10px 10px 10px;
+  box-shadow: 1px 1px 10px;
+  
+  h3 {
+    margin: 5px;
+    text-align: center;
+    @include font;
+    font-size: 1.5em;
+  }
+  
+  li {
+    display: block;
+    margin: 5px 8px 5px -30px;
+    text-align: center;
+  }
+  
+  button {
+    display: block;
+    width: 120px;
+    margin: 10px auto;
+    background: $button-background;
+    border-radius: 20px 20px 20px;
+    @include font;
+  }
+  
+  input[value] {
+    display: block;
+    width: 200px;
+    margin: 5px auto;
+    background: $background;
+  }
+  
+  textarea {
+    display: block;
+    width: 200px;
+    margin: 5px auto;
+    background: $background;
+  }
+  
+  input[type='submit'] {
+    width: 120px;
+    display: block;
+    margin: 12px auto;
+    background: $button-background;
+    border-radius: 10px 10px 10px;
+    @include font;
+  }
+}
+
+#credits {
+  display: block;
+  text-align: center;
+  display: block;
+  margin: 20px auto;
+  background: $tab-background;
+  width: 100px;
+  height: 22px;
+  border-radius: 10px 10px 10px;
+  color: black;
+  text-decoration: none;
+  @include font;
+}
